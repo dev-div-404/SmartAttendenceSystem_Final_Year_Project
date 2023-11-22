@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import AdminNavbar from '../components/AdminNavbar';
+import AdminManageClass from '../components/AdminManageClass';
+import AdminManageTeacher from '../components/AdminManageTeacher';
+import AdminManageAdmin from '../components/AdminManageAdmin';
 
 const AdminPage = () => {
 
@@ -9,7 +12,17 @@ const AdminPage = () => {
 
   return (
     <div className='admin-page-main-div'>
-        <AdminNavbar id = {id} option = {option} setOption = {setOption}/>
+        <div className='navbar-container'>
+            <AdminNavbar id = {id} option = {option} setOption = {setOption}/>
+        </div>
+        <div className='selected-view-div'>
+        {
+            option === 'class' ? <AdminManageClass />
+            : option === 'teacher' ? <AdminManageTeacher />
+            : option === 'admin' ? <AdminManageAdmin />
+            : null
+        }
+        </div>
     </div>
   )
 }

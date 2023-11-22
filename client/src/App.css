@@ -199,3 +199,148 @@
   color: red;
   scale: 1.1;
 }
+
+.manage-class-main-div{
+  width: 100%;
+  height: unset;
+  display: flex;
+  flex-direction: row;
+}
+
+.manage-class-class-list{
+  background-color: rgb(167, 206, 240);
+  width: 20%;
+  height: 530px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.manage-class-details{
+  border: 1px solid rebeccapurple;
+  height: 530px;
+  width: 80%;
+}
+
+.class-list-container{
+  height: 95%;
+  width: 90%;
+}
+
+.add-new-class-btn-container{
+  width: 100%;
+  height: 40px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.add-new-class-btn{
+  height: 100%;
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  background-color: rgb(18, 124, 80);
+  color: white;
+  text-align: center;
+  align-items: center;
+  font-size: 15px;
+}
+
+.add-new-class-btn:hover{
+  cursor: pointer;
+  background-color: rgb(10, 99, 62);
+  color: rgb(140, 225, 140);
+}
+
+.class-list-list{
+  border: 2px solid black;
+  height: 440px;
+  margin-top: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.class-indivisual{
+  height: 30px;
+  text-align: left;
+  padding-left: 20px;
+  margin-bottom: 3px;
+}
+
+.class-indivisual:hover{
+  scale: 1.05;
+  cursor: pointer;
+}
+
+.even-claxx{
+  background-color: rgb(111, 171, 206);
+}
+
+.odd-class{
+  background-color: rgb(90, 161, 202);
+}
+
+.add-new-class-main-div{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-new-class-container{
+  border: 1px solid black;
+  height: 50%;
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-new-class-form-container{
+  height: 80%;
+  width: 90%;
+}
+
+.add-class-form{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-class-form *{
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.add-class-form input{
+  width: 30%;
+  height: 20px;
+}
+
+.add-class-form textarea{
+  width: 50%;
+  height: 40px;
+}
+
+.add-class-btn{
+  height: 30px;
+  background-color: rgb(204, 245, 204);
+  color: rgb(6, 53, 48);
+}
+
+.add-class-btn:hover{
+  scale: 1.1;
+  cursor: pointer;
+  background-color: rgb(3, 62, 3);
+  color: white;
+}
+
+.add-class-btn:active{
+  background-color: rgb(204, 245, 204);
+  color: rgb(6, 53, 48);
+}

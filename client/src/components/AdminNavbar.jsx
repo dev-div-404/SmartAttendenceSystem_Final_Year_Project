@@ -1,13 +1,20 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useNavigate } from 'react-router-dom';
 
 const AdminNavbar = (props) => {
 
   const adminid = props.id;
   const option = props.option;
   const setOption = props.setOption;
+
+  const navigate = useNavigate();
   
   const changeOptionHandler = (opt) =>{
     setOption(opt);
+  }
+
+  const logoutHandler = ()=>{
+      navigate('/adminlogin');
   }
 
   return (
@@ -36,7 +43,7 @@ const AdminNavbar = (props) => {
             <div>
               {adminid}
             </div>
-            <div  className='log-out-btn'>
+            <div  className='log-out-btn' onClick={logoutHandler}>
               logout
             </div>
         </div>
