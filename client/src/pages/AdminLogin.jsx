@@ -1,7 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 const AdminLogin = () => {
+
+    const axiosInstance = axios.create({
+        withCredentials: true,
+    });
 
     const navigate = useNavigate();
 
@@ -14,9 +19,23 @@ const AdminLogin = () => {
         setInfo({ ...info, [event.target.name]: event.target.value });
     }
 
+    useEffect(()=>{
+        axiosInstance.get(`${process.env.REACT_APP_SERVER_URI}/getadmin`).then(res =>{
+            if(res.data.loggedin){
+                navigate(`/admin/${res.data.admin}`);
+            }
+        }).catch(err => console.log(err))
+    },[])
+
     const logInButtonClickHandle = () =>{
         if(info.id !== '' && info.password !== ''){
-            navigate(`/admin/${info.id}`)
+            axiosInstance.post(`${process.env.REACT_APP_SERVER_URI}/adminlogin`,info).then(res =>{
+                if(res.data.success){
+                    navigate(`/admin/${info.id}`)
+                }else{
+                    alert('Wrong username or password');
+                }
+            }).catch(err => console.log(err))
         }else alert('fill all the fields')
     }
 

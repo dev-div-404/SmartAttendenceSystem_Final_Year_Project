@@ -1,14 +1,29 @@
-import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import AdminNavbar from '../components/AdminNavbar';
 import AdminManageClass from '../components/AdminManageClass';
 import AdminManageTeacher from '../components/AdminManageTeacher';
 import AdminManageAdmin from '../components/AdminManageAdmin';
+import axios from 'axios';
 
 const AdminPage = () => {
 
+    const axiosInstance = axios.create({
+      withCredentials : true,
+    })
+
+    const navigate = useNavigate();
+
     const { id } = useParams();
     const [option, setOption] = useState('class');
+
+    useEffect(()=>{
+        axiosInstance.get(`${process.env.REACT_APP_SERVER_URI}/getadmin`).then(res =>{
+            if(!res.data.loggedin){
+              navigate('/adminlogin')
+            }
+        }).catch(err => console.log(err))
+    },[])
 
   return (
     <div className='admin-page-main-div'>

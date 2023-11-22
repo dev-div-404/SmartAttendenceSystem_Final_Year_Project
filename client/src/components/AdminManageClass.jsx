@@ -1,14 +1,17 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AddNewClass from './AddNewClass';
 import ExistingClasses from './ExistingClasses';
+import axios from 'axios';
 
 const AdminManageClass = () => {
 
-    const classes = ['class1','class2','class3','class4','class5','class6','class1','class2','class3','class4','class5','class6','class1','class2','class3','class4','class5','class6'].sort();
+    const axiosInstance = axios.create({
+        withCredentials : true,
+    })
 
+    const [classes, setClasses] = useState([]);
     const [option, setOption] = useState('####');
     const [classid, setClassId] = useState('####');
-
 
     const addNewClassHandler = () =>{
         setOption('newclass');
@@ -19,6 +22,16 @@ const AdminManageClass = () => {
         setClassId(classname);
     }
 
+    useEffect(()=>{
+        axiosInstance.get(`${process.env.REACT_APP_SERVER_URI}/getclass`).then(res =>{
+            if(res.data.success){
+              setClasses(res.data.classes);
+            }
+         }).catch(err => console.log(err))
+    },[])
+
+
+
   return (
     <div className='manage-class-main-div'>
         <div className='manage-class-class-list'>
@@ -28,17 +41,24 @@ const AdminManageClass = () => {
                         Add new Class +
                     </button>
                 </div>
-                <div className='class-list-list'>
-                    {
-                       classes.map((myclass,index) =>(
-                            <div key={index} className = {index%2 === 0 ? 'even-claxx class-indivisual' : 'class-indivisual odd-class'} onClick={() => selectClassHandler(myclass)}>
-                                {
-                                    myclass
-                                }
-                            </div>
-                       ))
-                    }
-                </div>
+                {
+                    classes.length === 0 ? <div className='class-list-list'>
+                                                <div className='no-class-alert'>
+                                                    no classes still now
+                                                </div>
+                                            </div>
+                                        :   <div className='class-list-list'>
+                                                {
+                                                classes.map((myclass,index) =>(
+                                                        <div key={myclass._id} className = {index%2 === 0 ? 'even-claxx class-indivisual' : 'class-indivisual odd-class'} onClick={() => selectClassHandler(myclass.classid)}>
+                                                            {
+                                                                myclass.classid
+                                                            }
+                                                        </div>
+                                                ))
+                                                }
+                                            </div>
+                }
             </div>
         </div>
         <div className='manage-class-details'>

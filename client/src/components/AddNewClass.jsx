@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import axios from 'axios'
 
 const AddNewClass = (props) => {
 
@@ -7,9 +8,20 @@ const AddNewClass = (props) => {
         classdesc : ''
     });
 
+    const axiosInstance = axios.create({
+        withCredentials : true,
+    })
+
     const addClassBtnHandler = (event) =>{
         event.preventDefault();
-        console.log(classinfo);
+        axiosInstance.post(`${process.env.REACT_APP_SERVER_URI}/addclass`,classinfo).then(res =>{
+            if(res.data.success){
+                alert('new Class Added')
+                window.location.reload();
+            }else{
+                alert('can not add class')
+            }
+        }).catch(err => console.log(err))
     }
 
     const changeHandler = (event) =>{

@@ -1,5 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const AdminNavbar = (props) => {
 
@@ -8,13 +9,21 @@ const AdminNavbar = (props) => {
   const setOption = props.setOption;
 
   const navigate = useNavigate();
+
+  const axiosInstance = axios.create({
+    withCredentials: true,
+  });
   
   const changeOptionHandler = (opt) =>{
     setOption(opt);
   }
 
   const logoutHandler = ()=>{
-      navigate('/adminlogin');
+    axiosInstance.get(`${process.env.REACT_APP_SERVER_URI}/adminlogout`).then(res =>{
+        if(res.data.success){
+          navigate('/adminlogin');
+        }
+     }).catch(err => console.log(err))
   }
 
   return (
