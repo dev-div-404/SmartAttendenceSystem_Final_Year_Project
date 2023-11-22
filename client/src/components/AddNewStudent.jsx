@@ -1,9 +1,16 @@
-import React, { useState } from 'react'
-import RecordVideo from './RecordVideo'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 
 const AddNewStudent = (props) => {
 
     const classid = props.classid;
+    const setTemp = props.setTemp;
+    const temp = props.temp;
+
+    const axiosInstance = axios.create({
+        withCredentials : true,
+    })
+    
 
     const [info, setInfo] = useState({
         classid : classid,
@@ -20,7 +27,29 @@ const AddNewStudent = (props) => {
 
     const sddStudentButtonHandler = (event) =>{
         event.preventDefault();
+        console.log(info)
+        if(info.name === '' || info.roll === ''){
+            alert('fill all the forms');
+        }else{
+            axiosInstance.post(`${process.env.REACT_APP_SERVER_URI}/addstudent`,info).then(res =>{
+                if(res.data.success){
+                    setInfo({
+                        classid : classid,
+                        name : '',
+                        roll : ''
+                    })
+                    setTemp(temp+1);
+                }else{
+                    alert('Could not add new Student');
+                }
+            }).catch(err => console.log(err))
+        }
     }
+
+
+    useEffect(()=>{
+        
+    })
 
 
   return (
@@ -30,8 +59,8 @@ const AddNewStudent = (props) => {
                 <form className='add-student-form'>
                     <div className='basic-info-new-student'>
                         <input readOnly value={info.classid} className='student-add-classid'/>
-                        <input value={info.name} name='name' type ='text' onChange={changeInfoHandler} placeholder='Name'/>
-                        <input value={info.roll} name='roll' type='text' onChange={changeInfoHandler} placeholder='Roll'/>
+                        <input required value={info.name} name='name' type ='text' onChange={changeInfoHandler} placeholder='Name'/>
+                        <input required value={info.roll} name='roll' type='text' onChange={changeInfoHandler} placeholder='Roll'/>
                     </div>
                     <div className='record-video-div-container'>
                         {/* <RecordVideo onVideoRecorded={handleVideoRecorded} /> */}

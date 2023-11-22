@@ -6,6 +6,7 @@ import cors from 'cors'
 import dotenv from 'dotenv';
 import connectDB from './DB/connDB.js'
 import ClassModel from './DB/ClassSchema.js'
+import StudentModel from './DB/StudentSchema.js';
 
 
 
@@ -58,6 +59,35 @@ app.post('/addclass',async(req,res)=>{
         res.status(200).json({success : true});
     }catch(err){
         console.log(err);
+        res.status(200).json({success : false});
+    }
+})
+
+app.post('/addstudent',async(req,res)=>{
+    if(req.session.admin){
+        try{
+            StudentModel.create(req.body);
+            res.status(200).json({success : true});
+        }catch(err){
+            console.log(err);
+            res.status(200).json({success : false});
+        }
+    }else{
+        res.status(200).json({success : false});
+    }
+})
+
+
+app.post('/getstudents',async(req,res)=>{
+    if(req.session.admin){
+        try{
+            const students = await StudentModel.find({classid : req.body.classid}).exec();
+            res.status(200).json({success : true , students : students});
+        }catch(err){
+            console.log(err);
+            res.status(200).json({success : false});
+        }
+    }else{
         res.status(200).json({success : false});
     }
 })

@@ -1,10 +1,10 @@
 import React from 'react'
 
 const ExistingStudent = (props) => {
-    const studentid = props.studentid;
+    const student = props.student;
   return (
     <div>
-        ExistingStudent {studentid}
+        ExistingStudent {student._id}
     </div>
   )
 }

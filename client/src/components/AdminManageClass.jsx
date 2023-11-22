@@ -12,6 +12,7 @@ const AdminManageClass = () => {
     const [classes, setClasses] = useState([]);
     const [option, setOption] = useState('####');
     const [classid, setClassId] = useState('####');
+    const [temp, setTemp] = useState('####');
 
     const addNewClassHandler = () =>{
         setOption('newclass');
@@ -25,10 +26,10 @@ const AdminManageClass = () => {
     useEffect(()=>{
         axiosInstance.get(`${process.env.REACT_APP_SERVER_URI}/getclass`).then(res =>{
             if(res.data.success){
-              setClasses(res.data.classes);
+              setClasses([...res.data.classes].sort((a, b) => a.classid.localeCompare(b.classid)));
             }
          }).catch(err => console.log(err))
-    },[])
+    },[temp])
 
 
 
@@ -63,7 +64,7 @@ const AdminManageClass = () => {
         </div>
         <div className='manage-class-details'>
             {
-                option === 'newclass' ? <AddNewClass />
+                option === 'newclass' ? <AddNewClass temp = {temp} setTemp = {setTemp}/>
                                     
                 : option === 'existingclass' ?  <ExistingClasses classid = {classid}/>
                                                     

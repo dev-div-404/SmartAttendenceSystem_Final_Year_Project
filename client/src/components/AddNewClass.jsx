@@ -3,6 +3,9 @@ import axios from 'axios'
 
 const AddNewClass = (props) => {
 
+    const temp = props.temp;
+    const setTemp = props.setTemp;
+
     const [classinfo, setClassinfo] = useState({
         classid : '',
         classdesc : ''
@@ -16,8 +19,11 @@ const AddNewClass = (props) => {
         event.preventDefault();
         axiosInstance.post(`${process.env.REACT_APP_SERVER_URI}/addclass`,classinfo).then(res =>{
             if(res.data.success){
-                alert('new Class Added')
-                window.location.reload();
+                setTemp(temp+1);
+                setClassinfo({
+                    classid : '',
+                    classdesc : ''
+                })
             }else{
                 alert('can not add class')
             }

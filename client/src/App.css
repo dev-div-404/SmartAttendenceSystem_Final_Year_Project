@@ -494,3 +494,13 @@
   height: 30px;
   background-color: rgb(147, 209, 147);
 }
+
+.class-id-banner{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 100px;
+  color: rgba(128, 128, 128, 0.427);
+}
