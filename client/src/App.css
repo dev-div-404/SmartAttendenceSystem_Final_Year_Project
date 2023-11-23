@@ -504,3 +504,155 @@
   font-size: 100px;
   color: rgba(128, 128, 128, 0.427);
 }
+
+.add-teacher-form{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-teacher-form input{
+  width: 300px;
+  height: 40px;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.list{
+  color: black;
+}
+
+.teacher-navbar{
+  justify-content: end;
+}
+
+.teacher-page-body{
+  height: 560px;
+  width: 100%;
+  background-color: rgb(184, 214, 240);
+  display: flex;
+  flex-direction: row;
+}
+
+.teacher-side-bar{
+  height: 100%;
+  width: 30%;
+  background-color: rgb(149, 182, 210);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.list-teacher-container{
+  height: 100%;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-field{
+  height: 10%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input-field input{
+  height: 60%;
+  width: 50%;
+  margin-left: 20px;
+}
+
+.input-field button{
+  height: 60%;
+  width: 30%;
+  margin-right: 20px;
+  font-size: 15px;
+  background-color: rgb(56, 91, 56);
+  color: rgb(255, 169, 169);
+}
+
+.input-field button:hover{
+  cursor: pointer;
+  scale: 1.05;
+  background-color: rgb(31, 179, 31);
+  color: rgb(61, 9, 9);
+}
+
+.input-field button:active{
+  cursor: pointer;
+  scale: 1.00;
+  background-color: rgb(56, 91, 56);
+  color: rgb(255, 169, 169);
+}
+
+.btn-container{
+  height: 8%;
+  width: 100%;
+  border: solid green 1px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.student-liat-container{
+  width: 100%;
+  height: 80%;
+  margin-top: 2%;
+  border: solid green 1px;
+}
+
+.teacher-attendence-body{
+  height: 560px;
+  width: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.camera-video-display{
+  border: solid green 1px;
+  height: 80%;
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.video-text{
+  font-size: 80px;
+  color: rgba(128, 128, 128, 0.37);
+}
+
+.start-stop-btn{
+  height: 70%;
+  width: fit-content;
+  margin-left: 20px;
+  margin-right: 20px;
+  border: 1px solid black;
+  border-radius: 4px;
+}
+
+.start-stop-btn:hover{
+  scale: 1.05;
+  cursor: pointer;
+}
+
+
+.start-stop-btn:active{
+  scale: 1.00;
+}
+
+.start-btn{
+  background-color: rgb(70, 162, 70);
+}
+
+
+.stop-btn{
+  background-color: rgb(191, 120, 92);
+}

@@ -1,7 +1,14 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const TeacherLogin = () => {
 
+    const axiosInstance = axios.create({
+        withCredentials : true
+    })
+
+    const navigate = useNavigate()
 
     const [info, setInfo] = useState({
         id : '',
@@ -14,9 +21,25 @@ const TeacherLogin = () => {
 
     const logInButtonClickHandle = () =>{
         if(info.id !== '' && info.password !== ''){
-            console.log(info);
+            axiosInstance.post(`${process.env.REACT_APP_SERVER_URI}/teacherlogin`,info).then(res =>{
+                if(res.data.success){
+                    navigate(`/teacher/${info.id}`);
+                }else{
+                    alert(res.data.msg);
+                }
+            }).catch(err => console.log(err))
         }else alert('fill all the fields')
     }
+
+
+    useEffect(()=>{
+        axiosInstance.get(`${process.env.REACT_APP_SERVER_URI}/isteacher`).then(res =>{
+            if(res.data.loggedin){
+                navigate(`/teacher/${res.data.teacher}`);
+            }
+        }).catch(err => console.log(err))
+    },[])
+
 
   return (
     <div className='home-page-main-div'>
