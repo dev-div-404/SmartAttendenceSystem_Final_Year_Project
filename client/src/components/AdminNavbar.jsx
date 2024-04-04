@@ -21,7 +21,7 @@ const AdminNavbar = (props) => {
   const logoutHandler = ()=>{
     axiosInstance.get(`${process.env.REACT_APP_SERVER_URI}/adminlogout`).then(res =>{
         if(res.data.success){
-          navigate('/adminlogin');
+          navigate('/');
         }
      }).catch(err => console.log(err))
   }

@@ -37,7 +37,7 @@ const ExistingClasses = (props) => {
             alert('Could not fetch students');
         }
     }).catch(err => console.log(err))
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[classid, temp])
 
 

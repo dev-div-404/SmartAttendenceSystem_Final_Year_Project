@@ -29,6 +29,7 @@ const AdminManageClass = () => {
               setClasses([...res.data.classes].sort((a, b) => a.classid.localeCompare(b.classid)));
             }
          }).catch(err => console.log(err))
+         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[temp])
 
 

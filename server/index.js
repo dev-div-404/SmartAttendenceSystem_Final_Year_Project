@@ -21,7 +21,9 @@ app.use(cors({
 }));
 
 app.use(cookieParser())
-app.use(bodyParser.json())
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
 
 app.use(
     session({
@@ -67,7 +69,18 @@ app.post('/addclass',async(req,res)=>{
 app.post('/addstudent',async(req,res)=>{
     if(req.session.admin){
         try{
-            StudentModel.create(req.body);
+            const classid = req.body.info.classid;
+            const name = req.body.info.name;
+            const roll = req.body.info.roll;
+            const images = req.body.images;
+            const imagesBinary = images.map(imageData => Buffer.from(imageData.split(',')[1], 'base64'));
+
+            StudentModel.create({
+                classid : classid,
+                name : name,
+                roll : roll,
+                images : imagesBinary.map(data => ({ data, contentType: 'image/png' }))
+            });
             res.status(200).json({success : true});
         }catch(err){
             console.log(err);
@@ -129,7 +142,7 @@ app.get('/isteacher',(req,res)=>{
 app.post('/getstudents',async(req,res)=>{
     if(req.session.admin || req.session.teacher){
         try{
-            const students = await StudentModel.find({classid : req.body.classid}).exec();
+            const students = await StudentModel.find({classid : req.body.classid}).select('classid roll name').exec();
             res.status(200).json({success : true , students : students});
         }catch(err){
             console.log(err);
@@ -163,7 +176,6 @@ app.get('/getadmin',(req,res)=>{
 app.get('/getteacher',  async (req,res)=>{
     if(req.session.admin){
         const teachers = await TeacherModel.find({}).exec();
-        console.log(teachers);
         res.status(200).json({ success : true, teachers : teachers });
     }else{
         res.status(200).json({ msg : 'need to log in' })

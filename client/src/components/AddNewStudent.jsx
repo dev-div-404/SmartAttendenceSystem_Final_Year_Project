@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import CaptureImage from './CaptureImage';
+
 
 const AddNewStudent = (props) => {
 
@@ -10,13 +12,16 @@ const AddNewStudent = (props) => {
     const axiosInstance = axios.create({
         withCredentials : true,
     })
-    
 
+    const [videoStream, setVideoStream] = useState(null);
+
+    
     const [info, setInfo] = useState({
         classid : classid,
         name : '',
         roll : ''
     })
+    const [capturedImages, setCapturedImages] = useState([]);
 
     const changeInfoHandler = (event) =>{
         setInfo({
@@ -27,11 +32,10 @@ const AddNewStudent = (props) => {
 
     const sddStudentButtonHandler = (event) =>{
         event.preventDefault();
-        console.log(info)
         if(info.name === '' || info.roll === ''){
-            alert('fill all the forms');
+            alert('fill all the field');
         }else{
-            axiosInstance.post(`${process.env.REACT_APP_SERVER_URI}/addstudent`,info).then(res =>{
+            axiosInstance.post(`${process.env.REACT_APP_SERVER_URI}/addstudent`,{info : info, images : capturedImages}).then(res =>{
                 if(res.data.success){
                     setInfo({
                         classid : classid,
@@ -39,6 +43,11 @@ const AddNewStudent = (props) => {
                         roll : ''
                     })
                     setTemp(temp+1);
+                    //for turning off teh camera
+                    if (videoStream) { 
+                        videoStream.getTracks().forEach(track => track.stop());
+                        setVideoStream(null);                    }
+                    alert("one student added");
                 }else{
                     alert('Could not add new Student');
                 }
@@ -49,28 +58,30 @@ const AddNewStudent = (props) => {
 
     useEffect(()=>{
         
-    })
+    },[temp])
 
 
   return (
     <div className='add-student-main-div'>
         <div className='add-student-container-new'>
             <div className='add-student-form-container'>
-                <form className='add-student-form'>
+                <div className='add-student-form'>
                     <div className='basic-info-new-student'>
                         <input readOnly value={info.classid} className='student-add-classid'/>
                         <input required value={info.name} name='name' type ='text' onChange={changeInfoHandler} placeholder='Name'/>
                         <input required value={info.roll} name='roll' type='text' onChange={changeInfoHandler} placeholder='Roll'/>
                     </div>
                     <div className='record-video-div-container'>
-                        {/* <RecordVideo onVideoRecorded={handleVideoRecorded} /> */}
+                        <div className='video-display-container'>
+                            <CaptureImage capturedImages = {capturedImages} setCapturedImages = {setCapturedImages} videoStream = {videoStream} setVideoStream ={setVideoStream}/>
+                        </div>
                     </div>
                     <div className='add-stdnt-btn'>
-                        <button onClick={sddStudentButtonHandler}>
+                        <button onClick = {sddStudentButtonHandler}>
                             Add Student
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
         

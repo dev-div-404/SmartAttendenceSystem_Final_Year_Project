@@ -12,6 +12,13 @@ const StudentSchema = mongoose.Schema({
     roll : {
         type :String,
         required : true
+    },
+    images : {
+        type : [{
+            data : Buffer,
+            contentType : String,
+        }],
+        // required : true
     }
 })
 
