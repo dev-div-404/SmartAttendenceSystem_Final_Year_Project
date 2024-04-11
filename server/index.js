@@ -8,6 +8,7 @@ import connectDB from './DB/connDB.js'
 import ClassModel from './DB/ClassSchema.js'
 import StudentModel from './DB/StudentSchema.js';
 import TeacherModel from './DB/TeacherSchema.js'
+import StudentSchema from './DB/StudentSchema.js';
 
 
 
@@ -137,6 +138,40 @@ app.get('/isteacher',(req,res)=>{
         res.status(200).json({ loggedin : false })
     }
 })
+//get indivisual student data
+app.post('/getStudentData', async (req, res) => {
+    try {
+        const stId = req.body.id;
+        const studentData = await StudentModel.findOne({ _id: stId }).select('classid roll name images').exec();
+        if (!studentData) {
+            return res.status(404).json({ success: false, msg: "Student not found" });
+        }
+        const imageData = studentData.images.map(image => ({
+            data: Buffer.from(image.data).toString('base64'),
+            contentType: image.contentType
+        }));
+        delete studentData.images;
+        res.status(200).json({ success: true, images: imageData, studentData: studentData });
+    } catch (error) {
+        console.error('Error fetching student data:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+app.post('/deleteStudent', async (req, res) => {
+    try {
+        const stId = req.body.id;
+        const status = await StudentModel.deleteOne({_id : stId});
+        if(status){
+            res.status(200).json({ success: true, msg: 'one student deleted' });
+        }else{
+            res.status(200).json({ success: false, msg : 'no student found' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
 
 
 app.post('/getstudents',async(req,res)=>{

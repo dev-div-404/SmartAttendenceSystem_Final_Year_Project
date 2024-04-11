@@ -492,6 +492,73 @@
   justify-content: space-evenly;
 }
 
+.student-details-panel{
+  border: 1px solid red;
+  height: 100px;
+}
+.student-name-roll{
+  width: 70%;
+  height: 100%;
+  float: left;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.student-delete-div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+#studentName{
+  color: rgb(160, 7, 7);
+  font-size: large;
+}
+
+#studentRollNo{
+  color: rgb(17, 134, 85);
+  font-size: 20px;
+}
+
+.student-images {
+  border: 1px solid black;
+  height: 400px;
+  display: flex;
+  flex-wrap: wrap;
+  overflow: auto;
+}
+
+.image-student {
+  flex: 0 0 auto;
+  width: calc(33.33% - 5px);
+  margin: 1px;
+  box-sizing: border-box;
+}
+
+.image-student img {
+  width: 100%;
+  height: auto;
+}
+
+
+#delete-student-btn{
+  height: 30px;
+  border-radius: 5px;
+  background-color: rgb(225, 106, 106);
+  color: rgb(8, 7, 7);
+}
+
+#delete-student-btn:hover{
+  background-color: rgb(108, 7, 7);
+  color: white;
+  cursor: pointer;
+}
+#delete-student-btn:active{
+  background-color: rgb(225, 106, 106);
+  color: rgb(8, 7, 7);
+}
+
 .index-tsxt{
   margin-right: 10px;
   color: black;

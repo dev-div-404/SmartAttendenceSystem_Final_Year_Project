@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import AddNewStudent from './AddNewStudent';
 import ExistingStudent from './ExistingStudent';
 import axios from 'axios';
+import ClassHomePage from './ClassHomePage';
 
 const ExistingClasses = (props) => {
 
@@ -22,6 +23,7 @@ const ExistingClasses = (props) => {
   }
 
   const changeToExistingStudentOptionHandler = (id) =>{
+    setstOption('####');
     setstOption('existingstudent');
     setStudentid(id);
   }
@@ -58,7 +60,7 @@ const ExistingClasses = (props) => {
                   : <div className='student-list-container-list'>
                         {
                             students.map((student,index)=>(
-                              <div key={index} className= {index%2 === 0 ? 'even-student indivisual-student' : 'odd-student indivisual-student'} onClick={()=>changeToExistingStudentOptionHandler(student)}>
+                              <div key={index} className= {index%2 === 0 ? 'even-student indivisual-student' : 'odd-student indivisual-student'} onClick={()=>changeToExistingStudentOptionHandler(student._id)}>
                                   {
                                     student.roll + " " + student.name
                                   }
@@ -72,12 +74,8 @@ const ExistingClasses = (props) => {
         <div className='option-container-student'>
               {
                   stoption === 'addstudent' ? <AddNewStudent classid = {classid} setTemp = {setTemp} temp = {temp}/>
-                  :  stoption === 'existingstudent' ? <ExistingStudent student = {studentid}/>
-                  : <div className='class-id-banner'>
-                        {
-                          classid
-                        }
-                    </div>
+                  :  stoption === 'existingstudent' ? <ExistingStudent student = {studentid} setTemp = {setTemp} temp = {temp} setStudentid = {setStudentid} setstOption = {setstOption}/>
+                  : <ClassHomePage classid = {classid}/>
               }
         </div>
     </div>
