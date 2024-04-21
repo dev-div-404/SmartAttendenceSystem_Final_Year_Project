@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const TeacherNavbar = (props) => {
 
-  const id = props.id;
+  const t_name = props.name;
   const navigate = useNavigate();
 
   const axiosInstance = axios.create({
@@ -23,7 +23,7 @@ const TeacherNavbar = (props) => {
     <div className='navbar-main-div teacher-navbar'>
         <div className='nabbar-user-div'>
             <div>
-              {id}
+              {t_name}
             </div>
             <div  className='log-out-btn' onClick={logoutHandler}>
               logout

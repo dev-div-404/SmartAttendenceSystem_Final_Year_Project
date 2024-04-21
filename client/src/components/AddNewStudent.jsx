@@ -34,6 +34,8 @@ const AddNewStudent = (props) => {
         event.preventDefault();
         if(info.name === '' || info.roll === ''){
             alert('fill all the field');
+        }else if(capturedImages.length < 7){
+            alert('Need to add atleast 7 photoes');
         }else{
             axiosInstance.post(`${process.env.REACT_APP_SERVER_URI}/addstudent`,{info : info, images : capturedImages}).then(res =>{
                 if(res.data.success){
@@ -48,6 +50,8 @@ const AddNewStudent = (props) => {
                         videoStream.getTracks().forEach(track => track.stop());
                         setVideoStream(null);                    }
                     alert("one student added");
+                }else if(res.data.duplicate){
+                    alert('Duplicate Roll no found');
                 }else{
                     alert('Could not add new Student');
                 }

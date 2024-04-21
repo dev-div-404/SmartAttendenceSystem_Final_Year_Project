@@ -40,7 +40,7 @@ const ExistingStudent = (props) => {
     })
     .catch(error => {
         console.error('Error fetching images:', error);
-    });
+    });// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [student]);
 
   return (
@@ -64,7 +64,7 @@ const ExistingStudent = (props) => {
       <div className='student-images'>
           {images.map(image => (
               <div className='image-student'>
-                <img key={image._id} src={`data:image/jpeg;base64,${image.data}`} alt="student image" />
+                <img key={image._id} src={`data:image/jpeg;base64,${image.data}`} alt="student face load fail" />
               </div>
           ))}
       </div>

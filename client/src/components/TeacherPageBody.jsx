@@ -1,13 +1,16 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+import TeacherTakeAttendence from './TeacherTakeAttendence';
 
-const TeacherPageBody = () => {
+const TeacherPageBody = (props) => {
+
+    const t_id = props.id;
 
     const axiosInstance = axios.create({
         withCredentials : true
     })
 
-    const [classid, setClassid] = useState('');
+    const [classid, setClassid] = useState('it24');
     const [classname, setClassname] = useState(null);
     const [students, setStudents] = useState([]);
 
@@ -47,13 +50,6 @@ const TeacherPageBody = () => {
                     </button>
                 </div>
                 {
-                    classname ? <div className='btn-container'>
-                                    <button className='start-stop-btn start-btn'>Start Attendence</button>
-                                    <button className='start-stop-btn stop-btn'>Stop Attendence</button>
-                                </div>
-                            :   null
-                }
-                {
                     classname ? <div className='student-liat-container'>
                                     {
                                         students.length === 0 ? <div className='student-list-container-list'>
@@ -76,17 +72,11 @@ const TeacherPageBody = () => {
                 }
             </div>
         </div>
-
-        {
-            classname ? <div className='teacher-attendence-body'>
-                            <div className='camera-video-display'>
-                                <div className='video-text'>
-                                    V i d e o
-                                </div>
-                            </div>
-                        </div>
-                    : null
-        }
+        <div className='teacher-workspace'>
+            {
+                classname ? <TeacherTakeAttendence classname = {classname} t_id = {t_id}/> : null
+            }
+        </div>
     </div>
   )
 }

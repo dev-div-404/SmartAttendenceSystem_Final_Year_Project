@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { model } from "mongoose";
 
 const ClassSchema = mongoose.Schema({
     admin : {
@@ -6,11 +6,19 @@ const ClassSchema = mongoose.Schema({
         required : true,
     },
     classid : {
-        type :String,
+        type : String,
         required: true
     },
     classdesc : {
-        type :String,
+        type : String,
+    },
+    modelTrained : {
+        type : Number,
+        default : -1 //-1 means not trained yet; 0 means training in progress; 1 means training succeeded
+    },
+    studentCount : {
+        type : Number,
+        default : 0
     }
 })
 

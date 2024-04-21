@@ -7,8 +7,15 @@ import dotenv from 'dotenv';
 import connectDB from './DB/connDB.js'
 import ClassModel from './DB/ClassSchema.js'
 import StudentModel from './DB/StudentSchema.js';
-import TeacherModel from './DB/TeacherSchema.js'
-import StudentSchema from './DB/StudentSchema.js';
+import TeacherModel from './DB/TeacherSchema.js';
+import fs from 'fs'
+import fse from 'fs-extra'
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { PythonShell } from 'python-shell';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 
@@ -20,6 +27,7 @@ app.use(cors({
     credentials: true,
     methods: ['POST', 'GET']
 }));
+
 
 app.use(cookieParser())
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -43,6 +51,99 @@ dotenv.config(
 )
 
 connectDB();
+
+const run_python_options = {
+    mode: 'text',
+    pythonOptions: ['-u'],
+    scriptPath: path.join(__dirname,'pythonCodes'),
+    pythonPath: path.join(__dirname,'pythonCodes','env','Scripts','python.exe'),
+};
+
+const saveImageLocally = async(classid, students) => {
+    let folderPath = path.join(__dirname, 'data' , classid);
+    await fse.remove(folderPath);
+    fs.mkdirSync(folderPath);
+
+    folderPath = path.join(folderPath,'students');
+    fs.mkdirSync(folderPath);
+    folderPath = path.join(folderPath,'original');
+    fs.mkdirSync(folderPath);
+
+    students.forEach(student => {
+        const roll = student.roll;
+        let folderPathStudent = './';
+        folderPathStudent = path.join(folderPath, student.roll);
+        if (!fs.existsSync(folderPathStudent)) {
+            fs.mkdirSync(folderPathStudent);
+        }
+        // Save image to the local system
+        const imagesBinary = student.images;
+        imagesBinary.forEach((imageBuffer, index) => {
+            // Save the image buffer as a PNG file
+            let imagePath = path.join(folderPathStudent, `${index + 1}.png`);
+            fs.writeFileSync(imagePath, imageBuffer.data);
+        });
+    });  
+}
+
+const saveCroppedFaces = async (classid) =>{
+    await PythonShell.run('cropFacesAndSave.py', {...run_python_options, args : [classid]}, (err, result) => {
+        if (err) {
+            console.error('Python execution error:', err);
+        } else {
+            console.log('cropped images saved');
+        }
+    });
+}
+
+const extract_face_features = async (classid) =>{
+    await PythonShell.run('extract_face_features_to_csv_by_classid.py', {...run_python_options, args : [classid]}, (err, result) => {
+        if (err) {
+            console.error('Python execution error:', err);
+        } else {
+            console.log('cropped images saved');
+        }
+    });
+}
+
+const createAttendanceTempFiles = async(classid,teacher) => {
+    const temp_file_dir_path = path.join(__dirname, 'data', classid, 'temp_files');
+    if (fs.existsSync(temp_file_dir_path)){
+        console.log('file exist')
+        return;
+    }
+    
+    fse.ensureDirSync(temp_file_dir_path);
+    const attendance_data_path = path.join(temp_file_dir_path, 'attendance_data.json');
+    const data = { teacher : teacher, total: 0 };
+    fs.writeFile(attendance_data_path, JSON.stringify(data), (err) => {
+        if (err) {
+            console.error('Error writing to file:', err);
+        }
+    });
+}
+
+const saveAttendanceImage = async(imgData, classid) => {
+    const base64Image = Buffer.from(imgData.split(',')[1], 'base64');
+    const fileName = path.join(__dirname, 'data', classid, 'temp_files', 'attendance_image.png');
+    fs.writeFile(fileName, base64Image, (err) => {
+        if (err) {
+            console.error('Error saving image:', err);
+            throw err;
+        }
+    });
+};
+
+const runAttendanceModel = async (classid) => {
+    await PythonShell.run('takeAttendance.py', {...run_python_options, args : [classid]}, (err, result) => {
+        if (err) {
+            console.error('Python execution error:', err);
+        } else {
+            console.log('cropped images saved');
+        }
+    });
+}
+
 
 
 app.post('/adminlogin',(req,res)=>{
@@ -74,14 +175,31 @@ app.post('/addstudent',async(req,res)=>{
             const name = req.body.info.name;
             const roll = req.body.info.roll;
             const images = req.body.images;
-            const imagesBinary = images.map(imageData => Buffer.from(imageData.split(',')[1], 'base64'));
 
-            StudentModel.create({
+            const duplicate = await StudentModel.findOne({classid : classid, roll : roll});
+            if(duplicate){
+                res.status(200).json({success : false, duplicate : true});
+                return;
+            }
+
+            const imagesBinary = await images.map(imageData => Buffer.from(imageData.split(',')[1], 'base64'));
+
+            await StudentModel.create({
                 classid : classid,
                 name : name,
                 roll : roll,
                 images : imagesBinary.map(data => ({ data, contentType: 'image/png' }))
             });
+
+            const updatedClass = await ClassModel.findOneAndUpdate(
+                { classid: classid },
+                {
+                    $set: { modelTrained: -1 },
+                    $inc: { studentCount: 1 },
+                },
+                { new: true } // Return the updated document
+            );
+
             res.status(200).json({success : true});
         }catch(err){
             console.log(err);
@@ -113,6 +231,21 @@ app.post('/addteacher',async(req,res)=>{
     }
 })
 
+// take attendence
+app.post('/takeattendence',async(req,res)=>{
+    const classid = req.body.classid;
+    const t_id = req.body.t_id;
+    const image = req.body.image;
+
+    //creating the temp_file_dir if not exist
+    await createAttendanceTempFiles(classid, t_id);
+
+    await saveAttendanceImage(image,classid);
+    await runAttendanceModel(classid);
+    
+    res.status(200);
+})
+
 app.post('/teacherlogin',async(req,res)=>{
     const id = req.body.id;
     const pass = req.body.password;
@@ -121,6 +254,7 @@ app.post('/teacherlogin',async(req,res)=>{
     if(teacher){
         if(teacher.pw === pass){
             req.session.teacher = teacher.id;
+            req.session.teacher_name = teacher.name;
             res.status(200).json({ success : true });
         }else{
             res.status(200).json({ success : false, msg : 'incorrect Password' });
@@ -133,7 +267,7 @@ app.post('/teacherlogin',async(req,res)=>{
 
 app.get('/isteacher',(req,res)=>{
     if(req.session.teacher){
-        res.status(200).json({ loggedin : true, teacher : req.session.teacher })
+        res.status(200).json({ loggedin : true, teacher : req.session.teacher ,name : req.session.teacher_name})
     }else{
         res.status(200).json({ loggedin : false })
     }
@@ -158,14 +292,67 @@ app.post('/getStudentData', async (req, res) => {
     }
 });
 
+//train the model
+app.post('/trainModel', async (req, res) => {
+    const classid = req.body.classid;
+
+    await ClassModel.findOneAndUpdate(
+        { classid: classid },
+        { $set: { modelTrained: 0 } },
+    );
+
+    const students = await StudentModel.find({classid : classid}).exec();
+    //saving the data locally in the Data folder
+    await saveImageLocally(classid,students);
+    await saveCroppedFaces(classid);
+    await extract_face_features(classid);
+
+    await ClassModel.findOneAndUpdate(
+        { classid: classid },
+        { $set: { modelTrained: 1 } },
+    );
+
+    res.status(200).json({success : true});
+});
+
 app.post('/deleteStudent', async (req, res) => {
     try {
         const stId = req.body.id;
-        const status = await StudentModel.deleteOne({_id : stId});
-        if(status){
-            res.status(200).json({ success: true, msg: 'one student deleted' });
+
+        const student = await StudentModel.findOne({ _id: stId }).select('classid');
+        const classid = student.classid;
+
+        const status = await StudentModel.deleteOne({ _id: stId });
+
+        if (status.deletedCount > 0) {
+            const updatedClass = await ClassModel.findOneAndUpdate(
+                { classid: classid },
+                {
+                    $set: { modelTrained: -1 },
+                    $inc: { studentCount: -1 },
+                },
+                { new: true } // Return the updated document
+            );
+            console.log('hello$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            res.status(200).json({ success: true, msg: 'One student deleted' });
+        } else {
+            res.status(404).json({ success: false, msg: 'No student found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+
+app.post('/getclassdetails', async (req, res) => {
+    try {
+        const classid = req.body.classid;
+        const classdesc = await ClassModel.findOne({classid : classid});
+        if(classdesc){
+            res.status(200).json({ success: true, classdesc : classdesc });
         }else{
-            res.status(200).json({ success: false, msg : 'no student found' });
+            res.status(200).json({ success: false, msg : 'no class found' });
         }
     } catch (error) {
         res.status(500).json({ success: false, error: 'Internal Server Error' });
