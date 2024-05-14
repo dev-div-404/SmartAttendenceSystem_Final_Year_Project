@@ -42,10 +42,10 @@ const AdminNavbar = (props) => {
                 Manage Teachers
             </div>
             <div
-              className={ option === 'admin' ? 'nav-bar-opt navbar-selected-opt' : 'nav-bar-opt'}
-              onClick={() => changeOptionHandler('admin')}
+              className={ option === 'attendance' ? 'nav-bar-opt navbar-selected-opt' : 'nav-bar-opt'}
+              onClick={() => changeOptionHandler('attendance')}
             >
-                Manage Admins
+                Display Attendance
             </div>
         </div>
         <div className='nabbar-user-div'>

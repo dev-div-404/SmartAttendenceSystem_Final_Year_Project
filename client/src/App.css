@@ -480,17 +480,71 @@
 }
 
 .indivisual-student{
-  height: 25px;
+  height: 35px;
   margin-bottom: 3px;
   padding-left: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.indivisual-students{
+  height: 35px;
+  margin-bottom: 3px;
+  padding-left: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.button-div-submit{
+  height: 20%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#submit-btn-at{
+  height: 40px;
+  width: 140px;
+  background-color: rgb(108, 199, 108);
+}
+
+#submit-btn-at:hover{
+  background-color: rgb(9, 75, 9);
+  color: white;
+  cursor: pointer;
+}
+
+#submit-btn-at:active{
+  background-color: rgb(108, 199, 108);
+  color: black;
+}
+
+.indivisual-students:hover{
+  cursor: pointer;
+  border: 1px solid green;
 }
 
 .odd-student{
-  background-color: rgb(143, 189, 143);
+  background-color: rgb(113, 199, 203);
 }
 
 .even-student{
-  background-color: rgb(133, 203, 133);
+  background-color: rgb(164, 177, 181);
+}
+
+.present-status{
+  margin-right: 10px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.active-status{
+  height: 70%;
+  width: auto;
 }
 
 .indivisual-student:hover{
@@ -502,6 +556,24 @@
 .option-container-student{
   height: 100%;
   width: 75%;
+}
+
+#submit-attendance-whole-div{
+  height: 100%;
+}
+
+#student-list-submit-div{
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#student-list{
+  height: 80%;
+  width: 60%;
+  border: 1px solid red;
+  overflow: auto;
 }
 
 .add-student-main-div{
@@ -1011,4 +1083,60 @@
 
 .stop-btn{
   background-color: rgb(191, 120, 92);
+}
+
+#display-attendance{
+  height: 550px;
+  display: flex;
+  flex-direction: row;
+}
+
+#criteria-container{
+  border: 1px solid red;
+  height: 100%;
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#criteria-all-div{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 50%;
+  
+}
+
+#cls-id-field{
+  width: 200px;
+  margin-bottom: 50px;
+  height: 40px;
+  text-align: center;
+}
+
+#attendance-list-container{
+  width: 75%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#attendance-list{
+  height: 95%;
+  width: 95%;
+  border: 2px solid firebrick;
+  
+}
+
+.att-list{
+  height: 100%;
+  width: 100%;
+}
+
+.row{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
 }

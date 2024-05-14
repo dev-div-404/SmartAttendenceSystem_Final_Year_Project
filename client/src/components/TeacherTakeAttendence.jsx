@@ -6,8 +6,11 @@ const TeacherTakeAttendence = (props) => {
     //getting the props
     const classname = props.classname;
     const t_id = props.t_id;
+    const setPresentStudents = props.setPresentStudents;
+    const setOption = props.setOption;
+    const setSubCode = props.setSubCode;
+    const subCode = props.subCode;
 
-    const [subCode, setSubCode] = useState('');
     const [takingAttendence, setTakingAttendence] = useState(false)
 
     const axiosInstance = axios.create({
@@ -68,7 +71,8 @@ const TeacherTakeAttendence = (props) => {
         const image = await captureImage();
         console.log('attendence is being taken');
         await axiosInstance.post(`${process.env.REACT_APP_SERVER_URI}/takeattendence`,{t_id : t_id, classid : classname, image : image, subCode : subCode}).then(res =>{
-
+            const presentRolls = res.data.present;
+            setPresentStudents([...presentRolls]);
         }).catch(err => console.log(err))
     }
 
@@ -92,12 +96,13 @@ const TeacherTakeAttendence = (props) => {
     const stopAttendenceHandler = () => {
         toggleVideo();
         setTakingAttendence(false);
+        setOption('submit')
     }
 
     return (
         <div id='teacher-take-attendance'>
             <div id='teacher-attendence-header'>
-                <input type='text' placeholder="Subject code"  className='teacher-attendence-header-child' onChange={changeSubjectCodeHandler} disabled = {takeAttendance}/>
+                <input type='text' placeholder="Subject code"  className='teacher-attendence-header-child' onChange={changeSubjectCodeHandler} disabled = {takingAttendence}/>
                 <button className='teacher-attendence-header-child start-attendence-btn' disabled = {subCode === '' || takingAttendence} onClick={startAttendenceHandler}>Start Attendence</button>
                 <button className='teacher-attendence-header-child stop-attendence-btn' disabled = {!takingAttendence} onClick={stopAttendenceHandler}>Stop Attendence</button>
             </div>

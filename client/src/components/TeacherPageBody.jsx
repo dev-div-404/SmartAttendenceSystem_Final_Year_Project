@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import TeacherTakeAttendence from './TeacherTakeAttendence';
+import present_icon from './present_icon.png'
+import SubmitAttendance from './SubmitAttendance';
 
 const TeacherPageBody = (props) => {
 
@@ -10,9 +12,12 @@ const TeacherPageBody = (props) => {
         withCredentials : true
     })
 
-    const [classid, setClassid] = useState('it24');
+    const [classid, setClassid] = useState('');
     const [classname, setClassname] = useState(null);
     const [students, setStudents] = useState([]);
+    const [presentStudents, setPresentStudents] = useState([]);
+    const [option, setOption] = useState('take')
+    const [subCode, setSubCode] = useState('');
 
     const classidChangeHandler = (event) =>{
         setClassid(event.target.value);
@@ -26,6 +31,12 @@ const TeacherPageBody = (props) => {
                 alert('invalid class id');
             }
         }).catch(err => console.log(err))
+    }
+
+    const isPresent = (roll) => {
+        roll = parseInt(roll);
+        if(presentStudents.includes(roll)) return true;
+        return false;
     }
 
     useEffect(()=>{
@@ -58,11 +69,20 @@ const TeacherPageBody = (props) => {
                                         : <div className='student-list-container-list'>
                                                 {
                                                     students.map((student,index)=>(
-                                                    <div key={index} className= {index%2 === 0 ? 'even-student indivisual-student' : 'odd-student indivisual-student'}>
-                                                        {
-                                                            student.roll + " " + student.name
-                                                        }
-                                                    </div>
+                                                        <div key={index} className= {index%2 === 0 ? 'even-student indivisual-student' : 'odd-student indivisual-student'}>
+                                                            <div>
+                                                                {
+                                                                    student.roll + " " + student.name
+                                                                }
+                                                            </div>
+                                                            <div className='present-status'>
+                                                                {
+                                                                    (isPresent(student.roll) 
+                                                                    ? <img src= {present_icon} alt = 'P' className='active-status'/>
+                                                                    : null)
+                                                                }
+                                                            </div>
+                                                        </div>
                                                     ))
                                                 }
                                             </div>
@@ -74,7 +94,9 @@ const TeacherPageBody = (props) => {
         </div>
         <div className='teacher-workspace'>
             {
-                classname ? <TeacherTakeAttendence classname = {classname} t_id = {t_id}/> : null
+                classname ? option === 'take' ? <TeacherTakeAttendence classname = {classname} t_id = {t_id} setPresentStudents = {setPresentStudents} setOption = {setOption} subCode = {subCode} setSubCode = {setSubCode}/>
+                                              : <SubmitAttendance students = {students} presentStudents = {presentStudents} classname = {classname} t_id = {t_id} setPresentStudents = {setPresentStudents} setOption = {setOption} subCode = {subCode} setStudents = {setStudents} setClassname = {setClassname}/>
+                          : null
             }
         </div>
     </div>

@@ -8,6 +8,7 @@ import connectDB from './DB/connDB.js'
 import ClassModel from './DB/ClassSchema.js'
 import StudentModel from './DB/StudentSchema.js';
 import TeacherModel from './DB/TeacherSchema.js';
+import AttendanceModel from './DB/AttendanceSchema.js';
 import fs from 'fs'
 import fse from 'fs-extra'
 import path from 'path';
@@ -96,6 +97,14 @@ const saveCroppedFaces = async (classid) =>{
     });
 }
 
+const getCurrentDate = () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 const extract_face_features = async (classid) =>{
     await PythonShell.run('extract_face_features_to_csv_by_classid.py', {...run_python_options, args : [classid]}, (err, result) => {
         if (err) {
@@ -109,7 +118,6 @@ const extract_face_features = async (classid) =>{
 const createAttendanceTempFiles = async(classid,teacher) => {
     const temp_file_dir_path = path.join(__dirname, 'data', classid, 'temp_files');
     if (fs.existsSync(temp_file_dir_path)){
-        console.log('file exist')
         return;
     }
     
@@ -121,6 +129,18 @@ const createAttendanceTempFiles = async(classid,teacher) => {
             console.error('Error writing to file:', err);
         }
     });
+}
+
+const removeTempFiles = (classid) => {
+    const temp_file_dir_path = path.join(__dirname, 'data', classid, 'temp_files');
+    if (fs.existsSync(temp_file_dir_path)){
+        fse.remove(temp_file_dir_path).then(() => {
+                console.log('Folder deleted successfully');
+            })
+            .catch((err) => {
+                console.error('Error deleting folder:', err);
+            });
+    }
 }
 
 const saveAttendanceImage = async(imgData, classid) => {
@@ -142,6 +162,31 @@ const runAttendanceModel = async (classid) => {
             console.log('cropped images saved');
         }
     });
+}
+
+const getTempAttandanceData = async(classid) => {
+    let dataPath = path.join(__dirname, 'data', classid, 'temp_files', 'attendance_data.json');
+    fs.readFile(dataPath, 'utf8', (err, data) => {
+        if (err) {
+          console.error('Error:', err);
+          return;
+        }
+        
+        // Parse JSON
+        const jsonData = JSON.parse(data);
+
+        const total = jsonData.total;
+        
+        let res = []
+        // Traverse through keys
+        Object.keys(jsonData).forEach(key => {
+            if(key != 'total' || key != 'teacher')
+                if(jsonData[key] >= total / 2)
+                    res.push(key);
+        });
+        console.log(res)
+        return  res;
+      });
 }
 
 
@@ -242,9 +287,59 @@ app.post('/takeattendence',async(req,res)=>{
 
     await saveAttendanceImage(image,classid);
     await runAttendanceModel(classid);
+
+    let dataPath = path.join(__dirname, 'data', classid, 'temp_files', 'attendance_data.json');
+    fs.readFile(dataPath, 'utf8', (err, data) => {
+        if (err) {
+          console.error('Error:', err);
+          return;
+        }
+        const jsonData = JSON.parse(data);
+        const total = jsonData.total;
+        
+        let result = []
+        Object.keys(jsonData).forEach(key => {
+            if(key !== 'total' && key !== 'teacher')
+                if(jsonData[key] >= total / 2)
+                    result.push(parseInt(key));
+        });
+        res.status(200).json({ present : result });
+    });
     
-    res.status(200);
 })
+
+
+app.post('/submitattendance', async (req, res) => {
+    const attendanceData = req.body.att_data;
+    attendanceData.rolls.push(0);
+    const date = getCurrentDate();
+    try {
+        for (const roll of attendanceData.rolls) {
+            const st = await StudentModel.findOne({ classid: attendanceData.classid, roll: roll });
+            if (st) {
+                const attendanceRecord = new AttendanceModel({
+                    classid: attendanceData.classid,
+                    t_id: attendanceData.t_id,
+                    subCode: attendanceData.subCode,
+                    roll: roll,
+                    name: st.name,
+                    date: date
+                });
+                await attendanceRecord.save();
+            } else {
+                if(roll !== 0)
+                    console.error(`Student with roll ${roll} not found`);
+            }
+        }
+        console.log('Attendance marked successfully by ' + attendanceData.t_id + ' at ' + attendanceData.classid);
+        await removeTempFiles(attendanceData.classid);
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error('Error marking attendance:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 
 app.post('/teacherlogin',async(req,res)=>{
     const id = req.body.id;
@@ -263,6 +358,14 @@ app.post('/teacherlogin',async(req,res)=>{
         res.status(200).json({ success : false, msg : 'no teacher found' });
     }
 
+})
+
+
+app.post('/getattendance',async(req,res)=>{
+    const criteria = req.body.criteria;
+    // console.log(criteria);
+    const result = await AttendanceModel.find(criteria).exec();
+    res.json({result : result}).status(200);
 })
 
 app.get('/isteacher',(req,res)=>{

@@ -3,8 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import AdminNavbar from '../components/AdminNavbar';
 import AdminManageClass from '../components/AdminManageClass';
 import AdminManageTeacher from '../components/AdminManageTeacher';
-import AdminManageAdmin from '../components/AdminManageAdmin';
 import axios from 'axios';
+import DisplayAttendance from '../components/DisplayAttendance';
 
 const AdminPage = () => {
 
@@ -35,7 +35,7 @@ const AdminPage = () => {
         {
             option === 'class' ? <AdminManageClass />
             : option === 'teacher' ? <AdminManageTeacher />
-            : option === 'admin' ? <AdminManageAdmin />
+            : option === 'attendance' ? <DisplayAttendance />
             : null
         }
         </div>
