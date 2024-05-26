@@ -1,4 +1,4 @@
 <ul>
     Enroll Students
 </ul>
-![Screenshot](./sample/enroll_student.png)
+<img src = 'sample/enroll_student.png'/>
