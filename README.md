@@ -1,4 +1,4 @@
-<ul>
-    Enroll Students
-</ul>
+
+* Enroll Students
+
 <img src = 'sample/enroll_student.png'/>
